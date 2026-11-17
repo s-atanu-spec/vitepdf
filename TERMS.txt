@@ -1,0 +1,62 @@
+VitePDF 1.3.2
+Right-click image and PDF tools for Windows.
+Created by Atanu Sarkar. Made with Claude.
+
+
+WHAT IT IS
+
+VitePDF adds one entry, "VitePDF", to the right-click menu of pictures, of PDF files, and of the empty space in a folder.
+
+  Pictures (JPG, PNG, HEIC and more):  convert to PDF, merge, compress, convert to JPG or PNG, resize, black and white, remove hidden data, repair.
+  PDF files:  compress, merge, convert to JPG, organize pages, split, rotate, black and white, remove hidden data, password, repair.
+  Empty space in a folder:  capture an area of the screen to PDF, new blank PDF.
+  Sizes:  Original, Optimized, Under 1 MB, Under 350 KB, Under 200 KB, or a size you type. Two sizes can be saved as presets.
+
+Results are saved next to the source file under a new name.
+
+
+HOW IT WORKS
+
+VitePDF is a Python program. It uses the open-source libraries pikepdf, Pillow, pillow-heif, pypdfium2 and customtkinter. A small starter, VitePDF.exe, opens it.
+
+
+WHAT THE INSTALLER DOES
+
+  1. Checks that the files of this copy are unchanged.
+  2. Creates one folder:  %LOCALAPPDATA%\VitePDF
+     Setup.exe copies its own private Python and libraries there and uses no internet.
+     install.bat (source copy) uses Python 3.13.17 if you have it, or downloads that official installer from python.org and checks its digital signature; it then downloads the libraries from pypi.org and checks each one against a pinned checksum.
+  3. Runs a short test.
+  4. Adds the right-click menu entries, a Start menu shortcut and an entry under Settings > Apps, for your user account only.
+  5. On Windows 11 it offers to switch to the classic right-click menu.
+
+No administrator rights are used. Settings > Apps removes everything again.
+
+
+PRIVACY
+
+  - VitePDF runs offline. After installation it never connects to the internet.
+  - It collects nothing: no usage data, no file names, no documents leave your computer.
+  - It never changes or deletes your original files.
+  - Capture area to PDF reads the screen only while you drag the box, and saves only the area you chose.
+  - A small log of errors, your presets and your recent sizes are kept on your computer only, in the VitePDF folder.
+
+The only internet use is during installation from a source copy (python.org and pypi.org). Setup.exe uses none.
+
+
+SHARING
+
+VitePDF is free. You may use it, copy it and share it with others, at home or at work, under the MIT licence (see LICENSE.txt). Keep the licence and the credit with every copy.
+
+
+TERMS
+
+  - VitePDF is provided "as is", without warranty of any kind.
+  - The author is not liable for any damage or loss from its use.
+  - Always check a result before you use it: page order, readability and file size. Size presets reduce quality when a file has to shrink.
+  - A password added by VitePDF cannot be recovered if you forget it. Keep the original file.
+  - Remove a password only from files you are allowed to open.
+  - You are responsible for the documents you process and for having the right to process them.
+  - VitePDF is an independent tool. It is not affiliated with Adobe, with the Vite project, or with any website or authority.
+
+By ticking the box and choosing Install you accept these terms.
