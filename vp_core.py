@@ -29,7 +29,7 @@ import traceback
 from pathlib import Path
 
 APP_NAME = "VitePDF"
-VERSION = "1.3.2"
+VERSION = "1.4.0"
 # The author's signing key. A signed copy must carry this key or setup stops.
 AUTHOR_KEY = "A88B A544 E686 3A3C 1877 0B0C 3C40 DEBC"
 AUTHOR = "Atanu Sarkar"

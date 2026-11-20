@@ -20,8 +20,8 @@ using System.Windows.Forms;
 [assembly: AssemblyProduct("VitePDF")]
 [assembly: AssemblyCompany("Atanu Sarkar")]
 [assembly: AssemblyCopyright("Created by Atanu Sarkar. Made with Claude.")]
-[assembly: AssemblyVersion("1.3.2.0")]
-[assembly: AssemblyFileVersion("1.3.2.0")]
+[assembly: AssemblyVersion("1.4.0.0")]
+[assembly: AssemblyFileVersion("1.4.0.0")]
 
 internal static class Program
 {

@@ -37,16 +37,38 @@ Windows shows at most 16 entries in a menu of this kind, so the less frequent to
 | Menu | What you get |
 | --- | --- |
 | Capture area to PDF | The screen dims, you drag a box, and that area is saved in the folder as a lossless PDF |
+| Capture long page to PDF | For something taller than the screen, such as a long email: you drag a box, the page scrolls, and everything is saved as one PDF with A4 pages |
 | New blank PDF | An empty PDF: paper size, orientation, number of pages |
 
 ### Capture from any program
 
-To capture a browser page or any other window, bring it to the front and start **VitePDF Capture area** in one of these ways:
+To capture a browser page or any other window, bring it to the front and start **VitePDF Capture** in one of these ways:
 
-- Pin it to the taskbar once (Start menu, right-click **VitePDF Capture area**, **Pin to taskbar**), then click it.
+- Pin it to the taskbar once (Start menu, right-click **VitePDF Capture**, **Pin to taskbar**), then click it.
 - Press **Ctrl + Alt + Shift + P**.
 
 The screen dims, you drag a box, and the PDF is saved. The first time, VitePDF asks where captures go: Downloads, Desktop, or a folder you choose. To change it later, use **Change folder** in the "Capture saved" message. To change the keys, open the properties of the Start menu shortcut and set another **Shortcut key**.
+
+### Capture a long page: VitePDF Scroll
+
+For an email or page that does not fit on the screen. Start **VitePDF Scroll** from the Start menu, from the taskbar once pinned, or with **Ctrl + Alt + Shift + S**. It is also in the right-click menu of a folder as **Capture long page to PDF**.
+
+1. Scroll to where the capture should begin and drag a box around that part. Keep fixed side panels and fixed bars outside the box.
+2. The box turns red. Its thick bottom edge is the **END line**: everything that passes above it is captured.
+3. Scroll, either way:
+   - **By itself:** keep the pointer inside the box and take your hand off the mouse. After a 2 second countdown the page scrolls on its own and stops at the end of the page.
+   - **By hand:** just scroll down. Touching the mouse also takes over from the automatic scrolling at any time.
+4. Set the end: drag the red **END** label up to just under the last line you want, or scroll until that line sits just above the END line. Press **Finish**.
+5. In the preview, adjust "start" and "end" if needed, choose the page direction (Auto, Portrait, Landscape) and press **Save PDF**.
+
+Good to know:
+
+- The parts are joined at the exact row where they overlap. Nothing is resized or blended, so the PDF is as sharp as the screen. For sharper text, zoom the browser to 125 or 150 percent first.
+- Pages are A4. A page break is placed in a gap between lines, or on the quietest row nearby in a table. Captures wider than 1100 pixels go on landscape pages.
+- If the box turns amber, VitePDF lost its place: scroll back up a little until it is red again.
+- While it scrolls by itself, VitePDF turns the mouse wheel for you. That is the only input it ever sends: no clicks, no typing, and it never moves the pointer.
+- The saved PDF holds pictures of the page. Its text cannot be searched or copied.
+- It is saved in the same folder as other captures.
 
 ### Sizes
 
@@ -83,7 +105,7 @@ A window lists the files before merging. Drag the rows, or use **Move up** and *
 
 ### With Setup.exe (one file, no internet)
 
-1. Double-click **VitePDF-Setup-1.3.2.exe**.
+1. Double-click **VitePDF-Setup-1.4.0.exe**.
 2. If Windows shows a blue "Windows protected your PC" box, choose **More info**, then **Run anyway**. The box appears because the file has no paid publisher certificate.
 3. Read the welcome window, tick **I accept**, choose **Install**.
 
@@ -163,6 +185,7 @@ Run steps 2 and 3 again after any change to any file.
 | `vp_core.py` | Engine: pictures to PDF, compressing, size search |
 | `vp_ops.py` | Other tools: merge, convert, pages, password, clean-up, capture, blank |
 | `vp_ui.py` | Windows (customtkinter) |
+| `vp_scroll.py` | VitePDF Scroll: capturing a long page while it scrolls |
 | `vp_shell.py` | Right-click menus, install, uninstall, self-test |
 | `vp_main.py` | Command handling |
 | `launcher.cs`, `setup_stub.cs` | Starter and Setup program, compiled with the C# compiler of Windows |

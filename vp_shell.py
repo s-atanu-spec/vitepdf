@@ -27,8 +27,8 @@ UNINSTALL_KEY = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\VitePDF"
 CLASSIC_MENU_KEY = r"Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}"
 
 APP_FILES = ("vitepdf.py", "vp_core.py", "vp_ops.py", "vp_ui.py", "vp_shell.py", "vp_main.py",
-             "vitepdf.ico", "vitepdf.png", "vitepdf_capture.ico", "README.md", "TERMS.txt",
-             "LICENSE.txt")
+             "vp_scroll.py", "vitepdf.ico", "vitepdf.png", "vitepdf_capture.ico", "vitepdf_scroll.ico",
+             "README.md", "TERMS.txt", "LICENSE.txt")
 SOURCE_ONLY = ("requirements.txt", "uninstall.bat", "launcher.cs")
 
 
@@ -63,7 +63,8 @@ def menu_tree(launch, icon, kind):
     if kind == "folder":
         shell = {
             "01_capture": {"MUIVerb": "Capture area to PDF", "command": '%s capture x "%%V"' % launch},
-            "02_blank": {"MUIVerb": "New blank PDF", "command": '%s blank x "%%V"' % launch},
+            "02_scroll": {"MUIVerb": "Capture long page to PDF", "command": '%s scroll x "%%V"' % launch},
+            "03_blank": {"MUIVerb": "New blank PDF", "command": '%s blank x "%%V"' % launch},
             "09_about": about,
         }
         return {"MUIVerb": APP_NAME, "Icon": str(icon), "SubCommands": "", "shell": shell}
@@ -231,8 +232,20 @@ def _shortcut_path():
 CAPTURE_HOTKEY = "CTRL+ALT+SHIFT+P"
 
 
+SCROLL_HOTKEY = "CTRL+ALT+SHIFT+S"
+
+
 def _capture_shortcut_path():
-    return _shortcut_path().with_name("VitePDF Capture area.lnk")
+    return _shortcut_path().with_name("VitePDF Capture.lnk")
+
+
+def _scroll_shortcut_path():
+    return _shortcut_path().with_name("VitePDF Scroll.lnk")
+
+
+def _old_shortcut_paths():
+    """Names used by earlier versions; removed when installing and uninstalling."""
+    return [_shortcut_path().with_name("VitePDF Capture area.lnk")]
 
 
 def make_shortcut(exe):
@@ -240,9 +253,16 @@ def make_shortcut(exe):
     shortcut that works in any program. Values travel in environment
     variables, so no path ever becomes part of a command."""
     import subprocess
+    for old in _old_shortcut_paths():
+        try:
+            old.unlink()
+        except OSError:
+            pass
     env = dict(os.environ, VP_LNK=str(_shortcut_path()), VP_EXE=str(exe), VP_DIR=str(Path(exe).parent),
                VP_LNK2=str(_capture_shortcut_path()), VP_KEY=CAPTURE_HOTKEY,
-               VP_ICO2=str(Path(exe).parent / "app" / "vitepdf_capture.ico"))
+               VP_ICO2=str(Path(exe).parent / "app" / "vitepdf_capture.ico"),
+               VP_LNK3=str(_scroll_shortcut_path()), VP_KEY3=SCROLL_HOTKEY,
+               VP_ICO3=str(Path(exe).parent / "app" / "vitepdf_scroll.ico"))
     script = ("$w=New-Object -ComObject WScript.Shell;"
               "$s=$w.CreateShortcut($env:VP_LNK);"
               "$s.TargetPath=$env:VP_EXE;$s.WorkingDirectory=$env:VP_DIR;"
@@ -250,7 +270,11 @@ def make_shortcut(exe):
               "$c=$w.CreateShortcut($env:VP_LNK2);"
               "$c.TargetPath=$env:VP_EXE;$c.Arguments='capture x desktop';"
               "$c.WorkingDirectory=$env:VP_DIR;$c.Hotkey=$env:VP_KEY;$c.IconLocation=$env:VP_ICO2;"
-              "$c.Description='Capture an area of the screen to a PDF';$c.Save()")
+              "$c.Description='Capture an area of the screen to a PDF';$c.Save();"
+              "$l=$w.CreateShortcut($env:VP_LNK3);"
+              "$l.TargetPath=$env:VP_EXE;$l.Arguments='scroll x desktop';"
+              "$l.WorkingDirectory=$env:VP_DIR;$l.Hotkey=$env:VP_KEY3;$l.IconLocation=$env:VP_ICO3;"
+              "$l.Description='Capture a long page to a PDF while it scrolls';$l.Save()")
     try:
         subprocess.run([_system("powershell.exe"), "-NoProfile", "-NonInteractive", "-Command", script],
                        env=env, timeout=60, **_quiet())
@@ -375,8 +399,18 @@ def selftest(quiet=False):
         need(len(ops.strip_jpeg((tmp / "a.jpg").read_bytes())) > 100, "picture clean-up")
     import tkinter  # noqa: F401
     import customtkinter  # noqa: F401
+    # Long capture: join two overlapping pictures and build a page from them.
+    import vp_scroll
+    rows = [bytes(((r * 7 + c * 3) % 251, (r * 13) % 251, (c * 5) % 251)) * 20 for c in (1,) for r in range(300)]
+    st = vp_scroll.Stitcher(20, 120)
+    st.feed(rows[0:120], True)
+    st.feed(rows[60:180], True)
+    need(st.total() == 180 and st.rows == rows[:180], "joining a long capture")
+    strip = Image.frombytes("RGB", (20, st.total()), b"".join(st.rows))
+    with pikepdf.open(io.BytesIO(vp_scroll.build_pdf(strip, [(0, 100), (100, 180)]))) as pdf:
+        need(len(pdf.pages) == 2, "long capture to PDF")
     if not quiet:
-        print("      Self-test passed (JPG, PNG, HEIC, PDF pages, windows).")
+        print("      Self-test passed (JPG, PNG, HEIC, PDF pages, long capture, windows).")
     return 0
 
 
@@ -596,7 +630,7 @@ def uninstall(restore_menu=False, remove_folder=True):
     import subprocess
     root = data_dir()
     uninstall_menu()
-    for link in (_shortcut_path(), _capture_shortcut_path()):
+    for link in [_shortcut_path(), _capture_shortcut_path(), _scroll_shortcut_path()] + _old_shortcut_paths():
         try:
             link.unlink()
         except OSError:

@@ -9,6 +9,8 @@ reg delete "HKCU\Software\Classes\Directory\Background\shell\VitePDF" /f >nul 2>
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\VitePDF" /f >nul 2>&1
 if defined APPDATA del /q "%APPDATA%\Microsoft\Windows\Start Menu\Programs\VitePDF.lnk" >nul 2>&1
 if defined APPDATA del /q "%APPDATA%\Microsoft\Windows\Start Menu\Programs\VitePDF Capture area.lnk" >nul 2>&1
+if defined APPDATA del /q "%APPDATA%\Microsoft\Windows\Start Menu\Programs\VitePDF Capture.lnk" >nul 2>&1
+if defined APPDATA del /q "%APPDATA%\Microsoft\Windows\Start Menu\Programs\VitePDF Scroll.lnk" >nul 2>&1
 cd /d "%TEMP%"
 echo.
 echo Removing the VitePDF folder ...

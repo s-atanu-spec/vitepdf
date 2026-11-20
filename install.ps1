@@ -13,7 +13,7 @@
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
-$AppVersion = '1.3.2'
+$AppVersion = '1.4.0'
 $Here = Split-Path -Parent $MyInvocation.MyCommand.Path
 # Python 3.13.17 is the last 3.13 release with a Windows installer. Older
 # patch levels miss security fixes and are not accepted.
@@ -254,7 +254,9 @@ try {
             $link.WorkingDirectory = (Split-Path -Parent $exe)
             $link.Description = 'VitePDF: right-click image and PDF tools'
             $link.Save()
-            $cap = $shell.CreateShortcut((Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\VitePDF Capture area.lnk'))
+            $old = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\VitePDF Capture area.lnk'
+            if (Test-Path -LiteralPath $old) { Remove-Item -LiteralPath $old -Force -ErrorAction SilentlyContinue }
+            $cap = $shell.CreateShortcut((Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\VitePDF Capture.lnk'))
             $cap.TargetPath = $exe
             $cap.Arguments = 'capture x desktop'
             $cap.WorkingDirectory = (Split-Path -Parent $exe)
@@ -262,6 +264,14 @@ try {
             $cap.IconLocation = (Join-Path (Split-Path -Parent $exe) 'app\vitepdf_capture.ico')
             $cap.Description = 'Capture an area of the screen to a PDF'
             $cap.Save()
+            $long = $shell.CreateShortcut((Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\VitePDF Scroll.lnk'))
+            $long.TargetPath = $exe
+            $long.Arguments = 'scroll x desktop'
+            $long.WorkingDirectory = (Split-Path -Parent $exe)
+            $long.Hotkey = 'CTRL+ALT+SHIFT+S'
+            $long.IconLocation = (Join-Path (Split-Path -Parent $exe) 'app\vitepdf_scroll.ico')
+            $long.Description = 'Capture a long page to a PDF while it scrolls'
+            $long.Save()
         } catch { }
     }
     exit 0

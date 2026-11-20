@@ -825,6 +825,6 @@ def picture_to_pdf(im):
 
 
 def save_capture(folder, im):
-    out = write_file(unique_path(folder, "Capture " + time.strftime("%Y-%m-%d %H.%M.%S")),
+    out = write_file(unique_path(folder, "vitepdf-capture"),
                      picture_to_pdf(im))
     return out

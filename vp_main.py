@@ -29,7 +29,7 @@ Usage:
              pdf-split | pdf-organize | pdf-bw | pdf-clean | pdf-password | pdf-repair
   both       merge         original | optimized | under1mb | under350kb | custom
              preset        1 | 2
-  folder     capture x <folder> | blank x <folder>
+  folder     capture x <folder> | scroll x <folder> | blank x <folder>
 
   --now      run at once: no multi-select queue and no windows. Extra values:
              --limit 500KB   --bw   --mode add|remove   --size 600x600  --fit crop|fit
@@ -412,10 +412,33 @@ def _folder_action(action, folder):
     elif not folder.is_dir():
         folder = _known_folder("desktop")
     time.sleep(0.35)                        # let the menu or the taskbar click settle first
+    if action == "scroll":
+        return _scroll_capture(ui, folder, anywhere)
     im = ui.capture_area()
     if im is not None:
         out = ops.save_capture(folder, im)
         log("capture saved")
+        if anywhere:
+            ui.message_window("Capture saved", "%s\nSaved in: %s" % (out.name, folder.name or folder),
+                              outputs=[out], name="captured",
+                              extra=("Change folder", lambda: _capture_folder(ui, change=True)))
+    return 0
+
+
+def _scroll_capture(ui, folder, anywhere):
+    """Capture a long page while it scrolls (VitePDF Scroll)."""
+    import vp_scroll
+    try:
+        out, notes = vp_scroll.run(folder)
+    except Exception as e:
+        log("scroll capture failed: %s" % type(e).__name__)
+        ui.message_window("Capture not saved", "Something went wrong while capturing the long page. "
+                          "Nothing was saved. Please try again.", name="scroll-failed")
+        return 1
+    for line in notes:
+        log("scroll: " + line)                 # numbers only, never page content
+    if out is not None:
+        log("scroll capture saved")
         if anywhere:
             ui.message_window("Capture saved", "%s\nSaved in: %s" % (out.name, folder.name or folder),
                               outputs=[out], name="captured",
@@ -558,7 +581,7 @@ def main(argv):
         print(USAGE)
         return 2
     action, option = ALIASES.get(args[0], args[0]), args[1]
-    if action in ("capture", "blank"):
+    if action in ("capture", "scroll", "blank"):
         return _folder_action(action, args[2])
     if action not in ACTIONS:
         print(USAGE)
